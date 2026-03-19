@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angus — Sign In</title>
+<link rel="stylesheet" href="/css/shared.css">
+<style>
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .login-box {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: 100%;
+    max-width: 340px;
+  }
+  .login-title { font-size: 16px; font-weight: 500; margin-bottom: 4px; letter-spacing: -0.2px; }
+  .login-sub { font-size: 12px; color: var(--text-tertiary); margin-bottom: 1.5rem; }
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
+  .error-msg { font-size: 12px; color: #991B1B; background: #FDECEA; padding: 8px 12px; border-radius: var(--radius-md); margin-bottom: 1rem; }
+  .submit-btn {
+    width: 100%;
+    padding: 9px;
+    background: var(--text-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .submit-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+<div class="login-box">
+  <div class="login-title">Angus · Gibson House</div>
+  <div class="login-sub">2961 W Angus St · Los Angeles, CA</div>
+
+  <form method="POST" action="/login">
+    <div class="field">
+      <label for="password">Access code</label>
+      <input class="input" type="password" id="password" name="password" autofocus autocomplete="current-password" placeholder="Enter your password">
+    </div>
+    <% if (error) { %>
+    <div class="error-msg">Incorrect password. Try again.</div>
+    <% } %>
+    <button class="submit-btn" type="submit">Continue</button>
+  </form>
+</div>
+<script>
+  const params = new URLSearchParams(location.search);
+  if (params.get('error')) {
+    const err = document.createElement('div');
+    err.className = 'error-msg';
+    err.textContent = 'Incorrect password. Try again.';
+    const btn = document.querySelector('.submit-btn');
+    btn.parentNode.insertBefore(err, btn);
+  }
+</script>
+</body>
+</html>

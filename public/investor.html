@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angus — Project Update</title>
+<link rel="stylesheet" href="/css/shared.css">
+<style>
+  body { padding: 2rem 1rem; max-width: 760px; margin: 0 auto; }
+
+  .investor-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+  .investor-logo {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+
+  .metrics-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .metrics-3 { grid-template-columns: repeat(2, 1fr); }
+    body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="investor-header">
+    <div>
+      <div class="investor-logo">Angus · Gibson House LLC</div>
+      <div class="project-title" id="project-address">2961 W Angus St</div>
+      <div class="project-sub" id="project-sub">Los Angeles, CA · <span id="last-updated"></span></div>
+    </div>
+    <div>
+      <div class="status-badge">Active construction</div>
+      <form method="POST" action="/logout" style="margin-top:8px;text-align:right;">
+        <button type="submit" style="font-size:11px;color:var(--text-tertiary);background:none;border:none;cursor:pointer;">Sign out</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics-3 mb-6">
+    <div class="metric">
+      <div class="metric-label">% complete</div>
+      <div class="metric-value" id="m-pct">—</div>
+      <div class="metric-sub">Updated regularly</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Est. completion</div>
+      <div class="metric-value" id="m-target">—</div>
+      <div class="metric-sub" id="m-days">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Target list price</div>
+      <div class="metric-value" id="m-list">—</div>
+      <div class="metric-sub">Los Angeles, CA</div>
+    </div>
+  </div>
+
+  <!-- PHASES -->
+  <div class="card mb-6">
+    <div class="card-header">
+      <div class="card-title">Construction phases</div>
+      <div class="card-meta" id="phases-meta">—</div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="phases-bar" style="width:0%"></div></div>
+    <div id="phases-list"><div class="loading-state">Loading...</div></div>
+  </div>
+
+  <!-- CAM + UPDATES -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Live site cam</div>
+        <div class="card-meta">Exterior north</div>
+      </div>
+      <div class="cam-placeholder" id="cam-container">
+        <div class="cam-dot"></div>
+        <div class="cam-label">Camera not yet installed</div>
+        <div class="cam-time">Stream embeds here once live</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Progress updates</div>
+        <div class="card-meta">From the site</div>
+      </div>
+      <div id="updates-list"><div class="loading-state">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- PHOTOS -->
+  <div class="card" style="margin-top:1.5rem;">
+    <div class="card-header">
+      <div class="card-title">Photo stream</div>
+      <div class="card-meta">Site walkthroughs</div>
+    </div>
+    <div class="photo-grid" id="photos-grid"><div class="loading-state">Loading...</div></div>
+  </div>
+
+<script src="/js/investor.js"></script>
+</body>
+</html>
