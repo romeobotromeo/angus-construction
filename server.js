@@ -29,6 +29,15 @@ app.use('/investor', require('./routes/investor'));
 app.use('/api', require('./routes/api'));
 app.use('/sms', require('./routes/sms'));  // Twilio webhook: POST /sms
 
+// Temp: verify env vars are set (remove after confirming)
+app.get('/debug-env', (req, res) => {
+  res.json({
+    OWNER_PASS_SET: !!process.env.OWNER_PASS,
+    INVESTOR_PASS_SET: !!process.env.INVESTOR_PASS,
+    SESSION_SECRET_SET: !!process.env.SESSION_SECRET,
+  });
+});
+
 // Root redirect
 app.get('/', (req, res) => {
   if (req.session.role === 'owner') return res.redirect('/owner');
