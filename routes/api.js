@@ -23,13 +23,18 @@ router.get('/updates', requireAuth, async (req, res) => {
 });
 
 router.post('/updates', requireOwner, async (req, res) => {
-  const { body } = req.body;
-  if (!body) return res.status(400).json({ error: 'body required' });
-  const result = await db.query(
-    `INSERT INTO updates (body, source) VALUES ($1, 'web') RETURNING *`,
-    [body]
-  );
-  res.json(result.rows[0]);
+  try {
+    const { body } = req.body;
+    if (!body) return res.status(400).json({ error: 'body required' });
+    const result = await db.query(
+      `INSERT INTO updates (body, source) VALUES ($1, 'web') RETURNING *`,
+      [body]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('POST /updates error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── Photos ────────────────────────────────────────────
@@ -45,13 +50,18 @@ router.get('/budget', requireOwner, async (req, res) => {
 });
 
 router.patch('/budget/:id', requireOwner, async (req, res) => {
-  const { spent } = req.body;
-  const result = await db.query(
-    `UPDATE budget_items SET spent = $1 WHERE id = $2 RETURNING *`,
-    [spent, req.params.id]
-  );
-  if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
-  res.json(result.rows[0]);
+  try {
+    const { spent } = req.body;
+    const result = await db.query(
+      `UPDATE budget_items SET spent = $1 WHERE id = $2 RETURNING *`,
+      [spent, req.params.id]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('PATCH /budget error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── Phases ────────────────────────────────────────────
@@ -61,13 +71,18 @@ router.get('/phases', requireAuth, async (req, res) => {
 });
 
 router.patch('/phases/:id', requireOwner, async (req, res) => {
-  const { status, completed_date } = req.body;
-  const result = await db.query(
-    `UPDATE phases SET status = $1, completed_date = $2 WHERE id = $3 RETURNING *`,
-    [status, completed_date || null, req.params.id]
-  );
-  if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
-  res.json(result.rows[0]);
+  try {
+    const { status, completed_date } = req.body;
+    const result = await db.query(
+      `UPDATE phases SET status = $1, completed_date = $2 WHERE id = $3 RETURNING *`,
+      [status, completed_date || null, req.params.id]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('PATCH /phases error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── Inspections ───────────────────────────────────────
@@ -83,12 +98,17 @@ router.get('/subs', requireOwner, async (req, res) => {
 });
 
 router.post('/subs', requireOwner, async (req, res) => {
-  const { name, trade, typical_lead_days, phone } = req.body;
-  const result = await db.query(
-    `INSERT INTO subs (name, trade, typical_lead_days, phone) VALUES ($1, $2, $3, $4) RETURNING *`,
-    [name, trade, typical_lead_days || null, phone || null]
-  );
-  res.json(result.rows[0]);
+  try {
+    const { name, trade, typical_lead_days, phone } = req.body;
+    const result = await db.query(
+      `INSERT INTO subs (name, trade, typical_lead_days, phone) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name, trade, typical_lead_days || null, phone || null]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('POST /subs error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── Config ────────────────────────────────────────────
@@ -106,12 +126,17 @@ router.get('/config', requireAuth, async (req, res) => {
 });
 
 router.patch('/config/:key', requireOwner, async (req, res) => {
-  const { value } = req.body;
-  await db.query(
-    `INSERT INTO config (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2`,
-    [req.params.key, value]
-  );
-  res.json({ key: req.params.key, value });
+  try {
+    const { value } = req.body;
+    await db.query(
+      `INSERT INTO config (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2`,
+      [req.params.key, value]
+    );
+    res.json({ key: req.params.key, value });
+  } catch (err) {
+    console.error('PATCH /config error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── AI Brief ──────────────────────────────────────────
