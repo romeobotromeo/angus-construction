@@ -35,8 +35,17 @@ async function loadConfig() {
   document.getElementById('m-target').textContent = target ? fmtDateShort(target) : '—';
   document.getElementById('m-days').textContent = days !== null ? `${days} days out` : '—';
 
-  const price = parseFloat(config.target_list_price) || 0;
-  document.getElementById('m-list').textContent = price ? usd(price) : '—';
+  const listEl = document.getElementById('m-list');
+  if (config.target_list_price === 'TBD' || !config.target_list_price) {
+    listEl.textContent = 'TBD';
+  } else {
+    const price = parseFloat(config.target_list_price) || 0;
+    listEl.textContent = price ? usd(price) : 'TBD';
+  }
+
+  // SMS number
+  const smsEl = document.getElementById('sms-number');
+  if (smsEl && config.sms_number) smsEl.textContent = config.sms_number;
 
   if (config.webcam_url) {
     document.getElementById('cam-container').innerHTML = `<iframe src="${config.webcam_url}" allowfullscreen style="width:100%;height:160px;border:none;border-radius:8px;"></iframe>`;
@@ -86,9 +95,26 @@ async function loadPhotos() {
   document.getElementById('photos-grid').innerHTML = html || '<div class="empty-state">No photos yet.</div>';
 }
 
+// ── Plans ─────────────────────────────────────────────────────
+async function loadPlans() {
+  try {
+    const plans = await api('/architect-plans');
+    const container = document.getElementById('plans-list');
+    if (!container) return;
+    const html = plans.map(p => `
+      <div class="plan-row">
+        <div class="plan-icon">📄</div>
+        <div class="plan-label">${p.label}</div>
+        <div class="plan-date">${fmtDate(p.uploaded_at)}</div>
+        <a class="plan-link" href="${p.file_url}" target="_blank">Open</a>
+      </div>`).join('');
+    container.innerHTML = html || '<div class="empty-state">No plans uploaded yet.</div>';
+  } catch (e) { /* optional section */ }
+}
+
 // ── Init ─────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadConfig(), loadPhases(), loadUpdates(), loadPhotos()]);
+  await Promise.all([loadConfig(), loadPhases(), loadUpdates(), loadPhotos(), loadPlans()]);
 }
 
 init();

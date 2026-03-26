@@ -46,6 +46,7 @@ async function loadConfig() {
   const target = config.target_end_date;
   const days = daysUntil(target);
   const targetEl = document.getElementById('m-target');
+  targetEl.dataset.iso = target || '';
   targetEl.textContent = target ? fmtDateShort(target) : '—';
   document.getElementById('m-days').textContent = days !== null ? `${days} days` : '—';
 
@@ -54,6 +55,10 @@ async function loadConfig() {
   document.getElementById('m-list').textContent = price ? usd(price) : '—';
   const be = parseFloat(config.break_even_price) || 0;
   document.getElementById('m-breakeven').textContent = be ? `Break even ${usd(be)}` : '';
+
+  // SMS number
+  const smsEl = document.getElementById('sms-number');
+  if (smsEl && config.sms_number) smsEl.textContent = config.sms_number;
 
   // Webcam
   if (config.webcam_url) {
@@ -103,9 +108,13 @@ async function addUpdate() {
   const el = document.getElementById('new-update');
   const body = el.value.trim();
   if (!body) return;
-  await api('/updates', { method: 'POST', body: JSON.stringify({ body }) });
-  el.value = '';
-  loadUpdates();
+  try {
+    await api('/updates', { method: 'POST', body: JSON.stringify({ body }) });
+    el.value = '';
+    loadUpdates();
+  } catch (err) {
+    alert('Failed to save update. Try again.');
+  }
 }
 
 // ── Load Budget ──────────────────────────────────────────────
@@ -145,8 +154,12 @@ function startBudgetEdit(el, id, current) {
 
 async function saveBudgetEdit(input, id) {
   const spent = parseFloat(input.value);
-  if (!isNaN(spent)) {
-    await api(`/budget/${id}`, { method: 'PATCH', body: JSON.stringify({ spent }) });
+  try {
+    if (!isNaN(spent)) {
+      await api(`/budget/${id}`, { method: 'PATCH', body: JSON.stringify({ spent }) });
+    }
+  } catch (err) {
+    alert('Failed to save. Try again.');
   }
   loadBudget();
 }

@@ -62,8 +62,10 @@ PLANS: ${plans.rows.length} architect plan files on file.`;
     messages: [{ role: 'user', content: userContent }],
   });
 
+  if (!response.content || !response.content[0] || !response.content[0].text) {
+    throw new Error('Empty response from Claude');
+  }
   const text = response.content[0].text.trim();
-  // Extract JSON from response (handle potential markdown code blocks)
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('AI did not return valid JSON');
   const parsed = JSON.parse(jsonMatch[0]);
@@ -85,7 +87,8 @@ async function getCachedBrief() {
   const row = result.rows[0];
   const ageHours = (Date.now() - new Date(row.generated_at).getTime()) / (1000 * 60 * 60);
   if (ageHours > 23) return null; // stale
-  return { ...row.content_json, generated_at: row.generated_at };
+  const json = typeof row.content_json === 'string' ? JSON.parse(row.content_json) : row.content_json;
+  return { ...json, generated_at: row.generated_at };
 }
 
 async function getBrief(forceRefresh = false) {

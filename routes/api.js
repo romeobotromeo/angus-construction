@@ -137,7 +137,7 @@ router.post('/ai-brief/refresh', requireOwner, async (req, res) => {
 });
 
 // ── Architect Plans ───────────────────────────────────
-router.get('/architect-plans', requireOwner, async (req, res) => {
+router.get('/architect-plans', requireAuth, async (req, res) => {
   const result = await db.query(`SELECT * FROM architect_plans ORDER BY uploaded_at DESC`);
   res.json(result.rows);
 });
