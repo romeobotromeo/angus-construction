@@ -32,12 +32,24 @@ app.use('/investor', require('./routes/investor'));
 app.use('/api', require('./routes/api'));
 app.use('/sms', require('./routes/sms'));  // Twilio webhook: POST /sms
 
-// Temp: verify env vars are set (remove after confirming)
-app.get('/debug-env', (req, res) => {
+// Temp: verify env vars + DB connection
+app.get('/debug-env', async (req, res) => {
+  const db = require('./db');
+  let dbOk = false;
+  let dbError = null;
+  try {
+    await db.query('SELECT 1');
+    dbOk = true;
+  } catch (e) {
+    dbError = e.message;
+  }
   res.json({
+    DATABASE_URL_SET: !!process.env.DATABASE_URL,
     OWNER_PASS_SET: !!process.env.OWNER_PASS,
     INVESTOR_PASS_SET: !!process.env.INVESTOR_PASS,
     SESSION_SECRET_SET: !!process.env.SESSION_SECRET,
+    db_connected: dbOk,
+    db_error: dbError,
   });
 });
 
